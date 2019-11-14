@@ -8,6 +8,6 @@ module.exports = {
         return db("users").select("*").where({username: username}).first();
     },
     getAllUsers: () => {
-        return db("users").select("*");
+        return db("users").select("id", "username");
     }
 }
