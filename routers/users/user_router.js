@@ -2,6 +2,7 @@ const userModel = require("./user_model");
 const {validateUserInfo, hashPassword, restrictToLogin} = require("./middleware");
 const router = require("express").Router();
 const bcrypt = require('bcrypt');
+const {genUserToken} = require("../auth_helpers");
 
 router.post("/register", [validateUserInfo, hashPassword], (req, res) => {
     userModel.addUser(req.body)
@@ -10,11 +11,13 @@ router.post("/register", [validateUserInfo, hashPassword], (req, res) => {
 });
 
 router.post("/login", (req, res) => {
-    userModel.getPasswordByUsername(req.body.username)
-    .then(passObj => {
-        if(passObj && bcrypt.compareSync(req.body.password, passObj.password)) {
-            req.session.username = req.body.username;
-            res.sendStatus(200);
+    userModel.getUserByUsername(req.body.username)
+    .then(user => {
+        if(user && bcrypt.compareSync(req.body.password, user.password)) {
+            res.status(200).json({
+                message: `Welcome ${user.username}`,
+                token: genUserToken(user)
+            });
         }
         else
             res.status(401).json({message: "invalid login credentials"})

@@ -4,8 +4,8 @@ module.exports = {
     addUser: userInfo => {
         return db("users").insert(userInfo);
     },   
-    getPasswordByUsername: username => {
-        return db("users").select("password").where({username: username}).first();
+    getUserByUsername: username => {
+        return db("users").select("*").where({username: username}).first();
     },
     getAllUsers: () => {
         return db("users").select("*");
